@@ -1,0 +1,39 @@
+rule AgentTesla_AutoIt_Keylogger_Injection
+{
+    meta:
+        description = "Detects Agent Tesla-like malware with AutoIt, keylogging, and process injection artifacts"
+        author = "Manali Bisht"
+        date = "2026-03-23"
+        reference = "MalwareBazaar sample"
+        version = "1.0"
+
+    strings:
+        // AutoIt artifacts
+        $autoit_1 = "AutoIt v3" wide ascii
+        $autoit_2 = "/AutoIt3ExecuteScript" wide ascii
+        $autoit_3 = ">>>AUTOIT NO CMDEXECUTE<<<" wide ascii
+
+        // Keylogging artifacts
+        $key_1 = "BACKSPACE" wide ascii
+        $key_2 = "ENTER" wide ascii
+        $key_3 = "CAPSLOCK" wide ascii
+        $key_4 = "PRINTSCREEN" wide ascii
+
+        // Keylogging / input APIs
+        $api_1 = "GetAsyncKeyState" ascii
+        $api_2 = "GetKeyState" ascii
+        $api_3 = "SendInput" ascii
+
+        // Injection / tampering APIs
+        $inj_1 = "OpenProcess" ascii
+        $inj_2 = "VirtualAllocEx" ascii
+        $inj_3 = "WriteProcessMemory" ascii
+        $inj_4 = "ReadProcessMemory" ascii
+
+    condition:
+        (2 of ($autoit_*)) and
+        (2 of ($key_*)) and
+        (1 of ($api_*)) and
+        (2 of ($inj_*)) and
+        filesize < 500KB
+}
