@@ -1,0 +1,35 @@
+rule AgentTesla_Check
+{
+    meta:
+        author = "George Chak"
+        description = "YARA rule for detecting malware based on network and host IoCs"
+        date = "2026-03-31"
+        severity = "high"
+
+    strings:
+        // Host-based file paths
+        $file_userenv = "C:\\Windows\\sysWOW64\\userenv.dll" nocase
+        $file_aut178F = "C:\\Users\\George\\AppData\\Local\\temp\\aut178F.tmp" nocase
+        $file_brawlys = "C:\\Users\\George\\AppData\\Local\\temp\\brawlys" nocase
+        $file_ageless = "C:\\Users\\George\\AppData\\Local\\temp\\ageless" nocase
+        $file_aut178 = "C:\\Users\\George\\AppData\\Local\\temp\\aut178.tmp" nocase
+        $file_DHL = "C:\\Users\\George\\Appdata\\Local\\directory\\DHL8900067.exe" nocase
+
+        // Registry keys
+        $reg_sidebyside = "HKLM\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\SideBySide" nocase
+        $reg_ole = "HKLM\\SOFTWARE\\Microsoft\\Ole" nocase
+
+        // Process names
+        $proc_DHL = "DHL008976.exe" nocase
+
+        // Network IPs (as string patterns for detection in logs or scripts)
+        $ip_geoloc = "208.95.112.1:80"
+        $ip_azure = "13.70.79.200:443"
+        $ip_cloudflare = "104.26.12.205:443"
+
+    condition:
+        any of ($file_userenv, $file_aut178F, $file_brawlys, $file_ageless, $file_aut178, $file_DHL) or
+        any of ($reg_sidebyside, $reg_ole) or
+        $proc_DHL or
+        any of ($ip_geoloc, $ip_azure, $ip_cloudflare)
+}
